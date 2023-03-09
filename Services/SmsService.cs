@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using NotificationUtils.Dto;
 using NotificationUtils.Entities;
 using NotificationUtils.Helpers;
@@ -25,16 +27,18 @@ public class SmsService
             Text = dto.Text
         };
         
-        var tx = TransactionScopeHelper.Create();
+        using var tx = TransactionScopeHelper.Create();
         try
         {
             await _httpService.SendSparrowSms(dto);
+            Console.WriteLine(JsonSerializer.Serialize(dto));
             await _smsRepository.InsertAsync(sms);
+            tx.Complete();
         }
         catch (Exception e)
         {
-            tx.Dispose();
             Console.WriteLine(e);
+            tx.Dispose();
             throw;
         }
 
