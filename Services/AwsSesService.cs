@@ -39,9 +39,13 @@ public class AwsSesService
             var response = await client.SendEmailAsync(request);
             return;
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             throw new Exception(e.Message);
+        }
+        finally
+        {
+            client.Dispose();
         }
     }
 }
